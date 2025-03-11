@@ -24,7 +24,12 @@ public class FacultyController {
         if (faculty == null) {
             return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.ok(faculty);
+        return ResponseEntity.ok(faculty);
+    }
+
+    @GetMapping
+    public ResponseEntity<Collection<Faculty>> getAllFaculties() {
+        return ResponseEntity.ok(facultyService.getAllFaculties());
     }
 
     @PostMapping
