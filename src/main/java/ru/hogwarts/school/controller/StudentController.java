@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
 
@@ -24,7 +24,12 @@ public class StudentController {
         if (student == null) {
             return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.ok(student);
+        return ResponseEntity.ok(student);
+    }
+
+    @GetMapping
+    public ResponseEntity<Collection<Student>> getAllStudents() {
+        return ResponseEntity.ok(studentService.getAllStudents());
     }
 
     @PostMapping
