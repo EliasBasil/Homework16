@@ -38,4 +38,8 @@ public class FacultyService {
     public Collection<Faculty> filterByColor(String color) {
         return facultyRepository.findByColor(color);
     }
+
+    public Collection<Faculty> getFacultiesByColorOrName(String request) {
+        return facultyRepository.findByColorIgnoreCaseOrNameIgnoreCase(request, request);
+    }
 }
