@@ -66,6 +66,25 @@ public class StudentController {
         return ResponseEntity.ok(studentsDtoByAge);
     }
 
+    @GetMapping("/total_number")
+    public ResponseEntity<Integer> getTotalNumberOfStudents() {
+        Integer total = studentService.getTotalNumberOfStudents();
+        return ResponseEntity.ok(total);
+    }
+
+    @GetMapping("/average_age")
+    public ResponseEntity<Double> getAverageAgeOfStudents() {
+        Double averageAgeOfStudents = studentService.getAverageAgeOfStudents();
+        return ResponseEntity.ok(averageAgeOfStudents);
+    }
+
+    @GetMapping("/latest_five")
+    public ResponseEntity<List<StudentDtoOut>> getLatestFiveStudents() {
+        List<StudentDtoOut> latestFiveStudents = studentService.getLatestFiveOfStudents()
+                .stream().map(studentDTOMapper::studentToDtoOut).toList();
+        return ResponseEntity.ok(latestFiveStudents);
+    }
+
     @PostMapping
     public ResponseEntity<StudentDtoOut> addStudent(@RequestBody StudentDtoIn studentDtoIn) {
         Student student = studentService.addStudent(studentDTOMapper.dtoInToStudent(studentDtoIn));

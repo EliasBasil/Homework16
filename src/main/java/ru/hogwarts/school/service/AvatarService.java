@@ -2,6 +2,7 @@ package ru.hogwarts.school.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
@@ -14,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -70,8 +72,8 @@ public class AvatarService {
 
     private byte[] generateSmallAvatarForDB(Path path) throws IOException {
         try (InputStream is = Files.newInputStream(path);
-        BufferedInputStream bis = new BufferedInputStream(is, 1024);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+             BufferedInputStream bis = new BufferedInputStream(is, 1024);
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             BufferedImage image = ImageIO.read(bis);
 
             int height = image.getHeight() / (image.getWidth() / 100);
@@ -83,5 +85,10 @@ public class AvatarService {
             ImageIO.write(preview, getExtension(path.getFileName().toString()), baos);
             return baos.toByteArray();
         }
+    }
+
+    public List<Avatar> getAvatarPage(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 }
