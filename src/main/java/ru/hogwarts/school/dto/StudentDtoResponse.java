@@ -2,16 +2,16 @@ package ru.hogwarts.school.dto;
 
 import java.util.Objects;
 
-public class StudentDtoOut {
+public class StudentDtoResponse {
     private long id;
     private String name;
     private int age;
     private long facultyId;
 
-    public StudentDtoOut() {
+    public StudentDtoResponse() {
     }
 
-    public StudentDtoOut(long id, String name, int age, long facultyId) {
+    public StudentDtoResponse(long id, String name, int age, long facultyId) {
         this.id = id;
         this.name = name;
         this.age = age;
@@ -53,7 +53,7 @@ public class StudentDtoOut {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StudentDtoOut that)) return false;
+        if (!(o instanceof StudentDtoResponse that)) return false;
         return id == that.id && age == that.age && facultyId == that.facultyId && Objects.equals(name, that.name);
     }
 

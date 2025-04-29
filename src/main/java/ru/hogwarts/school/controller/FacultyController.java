@@ -5,14 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.dto.FacultyDtoIn;
 import ru.hogwarts.school.dto.FacultyDtoInWithId;
-import ru.hogwarts.school.dto.FacultyDtoOut;
-import ru.hogwarts.school.dto.StudentDtoOut;
+import ru.hogwarts.school.dto.FacultyDtoResponse;
+import ru.hogwarts.school.dto.StudentDtoResponse;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentService;
-import ru.hogwarts.school.util.FacultyDTOMapper;
-import ru.hogwarts.school.util.StudentDTOMapper;
 
 import java.util.List;
 
@@ -20,93 +18,80 @@ import java.util.List;
 @RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService facultyService;
-    private final FacultyDTOMapper facultyDTOMapper;
-    private final StudentDTOMapper studentDTOMapper;
     private final StudentService studentService;
 
-    public FacultyController(FacultyService facultyService, FacultyDTOMapper facultyDTOMapper,
-                             StudentDTOMapper studentDTOMapper, StudentService studentService) {
+    public FacultyController(FacultyService facultyService, StudentService studentService) {
         this.facultyService = facultyService;
-        this.facultyDTOMapper = facultyDTOMapper;
-        this.studentDTOMapper = studentDTOMapper;
         this.studentService = studentService;
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<FacultyDtoOut> getFacultyInfo(@PathVariable Long id) {
-        Faculty faculty = facultyService.getFaculty(id);
-        if (faculty == null) {
+    public ResponseEntity<FacultyDtoResponse> getFacultyInfo(@PathVariable Long id) {
+        FacultyDtoResponse facultyDtoResponse = facultyService.getFacultyDtoOut(id);
+        if (facultyDtoResponse == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(facultyDTOMapper.facultyToDtoOut(faculty));
+        return ResponseEntity.ok(facultyDtoResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<FacultyDtoOut>> getAllFaculties() {
-        List<FacultyDtoOut> allFacultiesDto = facultyService.getAllFaculties()
-                .stream().map(facultyDTOMapper::facultyToDtoOut).toList();
+    public ResponseEntity<List<FacultyDtoResponse>> getAllFaculties() {
+        List<FacultyDtoResponse> allFacultiesDto = facultyService.getAllFaculties();
         return ResponseEntity.ok(allFacultiesDto);
     }
 
     @GetMapping("/filter/{color}")
-    public ResponseEntity<List<FacultyDtoOut>> getFacultiesByColor(@PathVariable String color) {
-        List<FacultyDtoOut> allFacultiesDtoByColor = facultyService.filterByColor(color)
-                .stream().map(facultyDTOMapper::facultyToDtoOut).toList();
+    public ResponseEntity<List<FacultyDtoResponse>> getFacultiesByColor(@PathVariable String color) {
+        List<FacultyDtoResponse> allFacultiesDtoByColor = facultyService.filterByColor(color);
         return ResponseEntity.ok(allFacultiesDtoByColor);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<FacultyDtoOut>> getFacultiesByColorOrName
+    public ResponseEntity<List<FacultyDtoResponse>> getFacultiesByColorOrName
             (@RequestParam String request) {
-        List<FacultyDtoOut> allFacultiesDtoByColorOrName = facultyService.getFacultiesByColorOrName(request)
-                .stream().map(facultyDTOMapper::facultyToDtoOut).toList();
+        List<FacultyDtoResponse> allFacultiesDtoByColorOrName = facultyService.getFacultiesByColorOrName(request);
         return ResponseEntity.ok(allFacultiesDtoByColorOrName);
     }
 
     @GetMapping("/students/{id}")
-    public ResponseEntity<List<StudentDtoOut>> getAllStudents(@PathVariable Long id) {
+    public ResponseEntity<List<StudentDtoResponse>> getAllStudents(@PathVariable Long id) {
         Faculty faculty = facultyService.getFaculty(id);
         if (faculty == null) {
             return ResponseEntity.notFound().build();
         }
-        List<StudentDtoOut> studentDtoOuts = faculty.getStudents()
-                .stream().map(studentDTOMapper::studentToDtoOut).toList();
-        return ResponseEntity.ok(studentDtoOuts);
+        List<StudentDtoResponse> studentDtoResponses = facultyService.getStudentDtos(faculty);
+        return ResponseEntity.ok(studentDtoResponses);
     }
 
     @PostMapping
-    public ResponseEntity<FacultyDtoOut> addFaculty(@RequestBody FacultyDtoIn facultyDtoIn) {
-        Faculty faculty = facultyService.addFaculty(facultyDTOMapper.dtoInToFaculty(facultyDtoIn));
-        return ResponseEntity.ok(facultyDTOMapper.facultyToDtoOut(faculty));
+    public ResponseEntity<FacultyDtoResponse> addFaculty(@RequestBody FacultyDtoIn facultyDtoIn) {
+        FacultyDtoResponse facultyDtoResponse = facultyService.addFaculty(facultyDtoIn);
+        return ResponseEntity.ok(facultyDtoResponse);
     }
 
     @PutMapping
-    public ResponseEntity<FacultyDtoOut> editFaculty(@RequestBody FacultyDtoInWithId facultyDtoInWithId) {
-        Faculty faculty = facultyDTOMapper.dtoInWithIdToFaculty(facultyDtoInWithId);
-        Faculty getFaculty = facultyService.getFaculty(faculty.getId());
+    public ResponseEntity<FacultyDtoResponse> editFaculty(@RequestBody FacultyDtoInWithId facultyDtoInWithId) {
+        Faculty getFaculty = facultyService.getFaculty(facultyDtoInWithId.getId());
         if (getFaculty == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Faculty foundFaculty = facultyService.editFaculty(faculty);
-        return ResponseEntity.ok(facultyDTOMapper.facultyToDtoOut(foundFaculty));
+        FacultyDtoResponse foundFaculty = facultyService.editFaculty(facultyDtoInWithId);
+        return ResponseEntity.ok(foundFaculty);
     }
 
     @PutMapping("add_student")
-    public ResponseEntity<FacultyDtoOut> addStudentToFaculty(@RequestParam long studentId, @RequestParam long facultyId) {
+    public ResponseEntity<FacultyDtoResponse> addStudentToFaculty(@RequestParam long studentId, @RequestParam long facultyId) {
         Faculty faculty = facultyService.getFaculty(facultyId);
         Student student = studentService.getStudent(studentId);
         if (faculty == null || student == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        faculty.addStudent(student);
-        student.setFaculty(faculty);
-        facultyService.editFaculty(faculty);
-        studentService.editStudent(student);
-        return ResponseEntity.ok(facultyDTOMapper.facultyToDtoOut(faculty));
+        FacultyDtoResponse facultyDtoResponse = facultyService.addStudentToFaculty(student, faculty);
+        return ResponseEntity.ok(facultyDtoResponse);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<FacultyDtoOut> deleteFaculty(@PathVariable long id) {
+    public ResponseEntity<FacultyDtoResponse> deleteFaculty(@PathVariable long id) {
         Faculty getFaculty = facultyService.getFaculty(id);
         if (getFaculty == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -116,7 +101,7 @@ public class FacultyController {
     }
 
     @DeleteMapping
-    public ResponseEntity<FacultyDtoOut> deleteAllFaculties() {
+    public ResponseEntity<FacultyDtoResponse> deleteAllFaculties() {
         facultyService.clearAll();
         return ResponseEntity.ok().build();
     }

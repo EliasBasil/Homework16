@@ -4,16 +4,16 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class FacultyDtoOut {
+public class FacultyDtoResponse {
     private long id;
     private String name;
     private String color;
-    private final Set<StudentDtoOut> students = new HashSet<>();
+    private final Set<StudentDtoResponse> students = new HashSet<>();
 
-    public FacultyDtoOut() {
+    public FacultyDtoResponse() {
     }
 
-    public FacultyDtoOut(long id, String name, String color) {
+    public FacultyDtoResponse(long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -43,18 +43,18 @@ public class FacultyDtoOut {
         this.color = color;
     }
 
-    public Set<StudentDtoOut> getStudents() {
+    public Set<StudentDtoResponse> getStudents() {
         return students;
     }
 
-    public void addStudentDTO(StudentDtoOut studentDtoOut) {
-        students.add(studentDtoOut);
+    public void addStudentDTO(StudentDtoResponse studentDtoResponse) {
+        students.add(studentDtoResponse);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FacultyDtoOut that)) return false;
+        if (!(o instanceof FacultyDtoResponse that)) return false;
         return id == that.id && Objects.equals(name, that.name) && Objects.equals(color, that.color) && Objects.equals(students, that.students);
     }
 

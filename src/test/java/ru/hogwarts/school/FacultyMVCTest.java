@@ -14,6 +14,7 @@ import ru.hogwarts.school.controller.FacultyController;
 import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repositories.AvatarRepository;
 import ru.hogwarts.school.repositories.FacultyRepository;
 import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.service.FacultyService;
@@ -41,6 +42,9 @@ public class FacultyMVCTest {
 
     @MockitoBean
     private FacultyRepository facultyRepository;
+
+    @MockitoBean
+    private AvatarRepository avatarRepository;
 
     @MockitoSpyBean
     private FacultyService facultyService;
