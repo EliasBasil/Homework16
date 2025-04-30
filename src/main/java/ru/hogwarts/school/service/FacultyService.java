@@ -69,7 +69,12 @@ public class FacultyService {
         return facultyRepository.findByColorIgnoreCaseOrNameIgnoreCase(request, request).stream().map(facultyDTOMapper::facultyToDtoOut).toList();
     }
 
-    public FacultyDtoResponse addStudentToFaculty(Student student, Faculty faculty) {
+    public FacultyDtoResponse addStudentToFaculty(long studentId, long facultyId) {
+        Faculty faculty = getFaculty(facultyId);
+        Student student = studentService.getStudent(studentId);
+        if (faculty == null || student == null) {
+            return null;
+        }
         faculty.addStudent(student);
         student.setFaculty(faculty);
         editFaculty(faculty);
