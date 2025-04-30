@@ -8,7 +8,6 @@ import ru.hogwarts.school.dto.FacultyDtoInWithId;
 import ru.hogwarts.school.dto.FacultyDtoResponse;
 import ru.hogwarts.school.dto.StudentDtoResponse;
 import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentService;
 
@@ -81,12 +80,10 @@ public class FacultyController {
 
     @PutMapping("add_student")
     public ResponseEntity<FacultyDtoResponse> addStudentToFaculty(@RequestParam long studentId, @RequestParam long facultyId) {
-        Faculty faculty = facultyService.getFaculty(facultyId);
-        Student student = studentService.getStudent(studentId);
-        if (faculty == null || student == null) {
+        FacultyDtoResponse facultyDtoResponse = facultyService.addStudentToFaculty(studentId, facultyId);
+        if (facultyDtoResponse == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        FacultyDtoResponse facultyDtoResponse = facultyService.addStudentToFaculty(student, faculty);
         return ResponseEntity.ok(facultyDtoResponse);
     }
 
