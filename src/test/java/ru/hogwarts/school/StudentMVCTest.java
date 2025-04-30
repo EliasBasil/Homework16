@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repositories.AvatarRepository;
 import ru.hogwarts.school.repositories.FacultyRepository;
 import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
@@ -39,6 +40,9 @@ public class StudentMVCTest {
 
     @MockitoBean
     private FacultyRepository facultyRepository;
+
+    @MockitoBean
+    private AvatarRepository avatarRepository;
 
     @MockitoSpyBean
     private StudentService studentService;

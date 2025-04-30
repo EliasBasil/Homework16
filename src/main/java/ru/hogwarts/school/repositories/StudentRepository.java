@@ -2,7 +2,6 @@ package ru.hogwarts.school.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.hogwarts.school.dto.StudentDtoOut;
 import ru.hogwarts.school.model.Student;
 
 import java.util.Collection;

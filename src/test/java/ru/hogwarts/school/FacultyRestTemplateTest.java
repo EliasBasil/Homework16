@@ -14,9 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import ru.hogwarts.school.controller.FacultyController;
 import ru.hogwarts.school.dto.FacultyDtoIn;
-import ru.hogwarts.school.dto.FacultyDtoOut;
+import ru.hogwarts.school.dto.FacultyDtoResponse;
 import ru.hogwarts.school.dto.StudentDtoIn;
-import ru.hogwarts.school.dto.StudentDtoOut;
+import ru.hogwarts.school.dto.StudentDtoResponse;
 import ru.hogwarts.school.model.Faculty;
 
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ public class FacultyRestTemplateTest {
         facultyDtoIn.setColor("color");
         facultyDtoIn.setName("Name");
 
-        ResponseEntity<FacultyDtoOut> facultyResponseEntity = restTemplate
-                .postForEntity("http://localhost:" + port + "/faculty", facultyDtoIn, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> facultyResponseEntity = restTemplate
+                .postForEntity("http://localhost:" + port + "/faculty", facultyDtoIn, FacultyDtoResponse.class);
         long savedFacultyId = requireNonNull(facultyResponseEntity.getBody()).getId();
 
-        ResponseEntity<FacultyDtoOut> findResponse = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> findResponse = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(findResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         Assertions.assertThat(findResponse.getBody().getId()).isEqualTo(savedFacultyId);
@@ -65,8 +65,8 @@ public class FacultyRestTemplateTest {
     public void testGetFacultyInfo_whenFacultyExists() throws Exception {
         long savedFacultyId = postFacultyAndGetFacultysId("Name", "color");
 
-        ResponseEntity<FacultyDtoOut> findResponse = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> findResponse = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(findResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         Assertions.assertThat(findResponse.getBody().getId()).isEqualTo(savedFacultyId);
@@ -78,8 +78,8 @@ public class FacultyRestTemplateTest {
 
     @Test
     public void testGetFacultyInfo_whenFacultyDoesNotExist() throws Exception {
-        ResponseEntity<FacultyDtoOut> findResponse = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + 16, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> findResponse = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + 16, FacultyDtoResponse.class);
         Assertions.assertThat(findResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -92,7 +92,7 @@ public class FacultyRestTemplateTest {
 
         int totalFaculties = 4;
 
-        ResponseEntity<ArrayList<FacultyDtoOut>> findResponse = restTemplate
+        ResponseEntity<ArrayList<FacultyDtoResponse>> findResponse = restTemplate
                 .exchange(
                         "http://localhost:" + port + "/faculty",
                         HttpMethod.GET,
@@ -169,19 +169,19 @@ public class FacultyRestTemplateTest {
     public void testEditFaculty_whenFacultyExists() throws Exception {
         long savedFacultyId = postFacultyAndGetFacultysId("Name", "color");
 
-        ResponseEntity<FacultyDtoOut> findResponse = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> findResponse = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(findResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        FacultyDtoOut facultyAfterEditing = new FacultyDtoOut();
+        FacultyDtoResponse facultyAfterEditing = new FacultyDtoResponse();
         facultyAfterEditing.setColor("new color");
         facultyAfterEditing.setName("New Name");
         facultyAfterEditing.setId(savedFacultyId);
 
         restTemplate.put("http://localhost:" + port + "/faculty", facultyAfterEditing);
 
-        ResponseEntity<FacultyDtoOut> response = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> response = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         Assertions.assertThat(response.getBody().getColor()).isEqualTo("new color");
@@ -192,17 +192,17 @@ public class FacultyRestTemplateTest {
 
     @Test
     public void testEditFaculty_whenFacultyDoesNotExist() throws Exception {
-        FacultyDtoOut facultyAfterEditing = new FacultyDtoOut();
+        FacultyDtoResponse facultyAfterEditing = new FacultyDtoResponse();
         facultyAfterEditing.setColor("new color");
         facultyAfterEditing.setName("New Name");
         facultyAfterEditing.setId(256);
 
-        RequestEntity<FacultyDtoOut> requestEntity = RequestEntity
+        RequestEntity<FacultyDtoResponse> requestEntity = RequestEntity
                 .put("http://localhost:" + port + "/faculty")
                 .body(facultyAfterEditing);
-        ResponseEntity<FacultyDtoOut> response = restTemplate.exchange(
+        ResponseEntity<FacultyDtoResponse> response = restTemplate.exchange(
                 requestEntity,
-                FacultyDtoOut.class);
+                FacultyDtoResponse.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -210,14 +210,14 @@ public class FacultyRestTemplateTest {
     public void testDeleteFaculty_whenFacultyExists() throws Exception {
         long savedFacultyId = postFacultyAndGetFacultysId("Name", "color");
 
-        ResponseEntity<FacultyDtoOut> findResponse = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> findResponse = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(findResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         restTemplate.delete("http://localhost:" + port + "/faculty/" + savedFacultyId);
 
-        ResponseEntity<FacultyDtoOut> response = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> response = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -225,9 +225,9 @@ public class FacultyRestTemplateTest {
     public void testDeleteFaculty_whenFacultyDoesNotExist() throws Exception {
         RequestEntity<Void> requestEntity = RequestEntity
                 .delete("http://localhost:" + port + "/faculty/16").build();
-        ResponseEntity<FacultyDtoOut> response = restTemplate.exchange(
+        ResponseEntity<FacultyDtoResponse> response = restTemplate.exchange(
                 requestEntity,
-                FacultyDtoOut.class);
+                FacultyDtoResponse.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -235,17 +235,17 @@ public class FacultyRestTemplateTest {
     public void testAddStudentToFaculty() throws Exception {
         long savedStudentId = postStudentAndGetStudentsId("Name", 12);
 
-        ResponseEntity<StudentDtoOut> findResponseStudent = restTemplate
-                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId, StudentDtoOut.class);
+        ResponseEntity<StudentDtoResponse> findResponseStudent = restTemplate
+                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId, StudentDtoResponse.class);
         Assertions.assertThat(findResponseStudent.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         long savedFacultyId = postFacultyAndGetFacultysId("Name", "color");
 
-        ResponseEntity<FacultyDtoOut> findResponseFaculty = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> findResponseFaculty = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(findResponseFaculty.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<FacultyDtoOut> addStudentResponse = restTemplate
+        ResponseEntity<FacultyDtoResponse> addStudentResponse = restTemplate
                 .exchange(
                         "http://localhost:" + port + "/faculty/add_student?studentId=" + savedStudentId + "&facultyId=" + savedFacultyId,
                         HttpMethod.PUT,
@@ -255,12 +255,12 @@ public class FacultyRestTemplateTest {
                 );
         Assertions.assertThat(addStudentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<StudentDtoOut> responseStudentAfterAddingFaculty = restTemplate
-                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId, StudentDtoOut.class);
+        ResponseEntity<StudentDtoResponse> responseStudentAfterAddingFaculty = restTemplate
+                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId, StudentDtoResponse.class);
         Assertions.assertThat(responseStudentAfterAddingFaculty.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<FacultyDtoOut> responseFacultyAfterAddingStudent = restTemplate
-                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> responseFacultyAfterAddingStudent = restTemplate
+                .getForEntity("http://localhost:" + port + "/faculty/" + savedFacultyId, FacultyDtoResponse.class);
         Assertions.assertThat(responseFacultyAfterAddingStudent.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         Assertions.assertThat(responseStudentAfterAddingFaculty.getBody().getFacultyId()).isEqualTo(savedFacultyId);
@@ -277,7 +277,7 @@ public class FacultyRestTemplateTest {
 
         long savedFacultyId = postFacultyAndGetFacultysId("Name", "color");
 
-        ResponseEntity<FacultyDtoOut> addStudentResponse1 = restTemplate
+        ResponseEntity<FacultyDtoResponse> addStudentResponse1 = restTemplate
                 .exchange(
                         "http://localhost:" + port + "/faculty/add_student?studentId=" + savedStudentId1 + "&facultyId=" + savedFacultyId,
                         HttpMethod.PUT,
@@ -287,7 +287,7 @@ public class FacultyRestTemplateTest {
                 );
         Assertions.assertThat(addStudentResponse1.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<FacultyDtoOut> addStudentResponse2 = restTemplate
+        ResponseEntity<FacultyDtoResponse> addStudentResponse2 = restTemplate
                 .exchange(
                         "http://localhost:" + port + "/faculty/add_student?studentId=" + savedStudentId2 + "&facultyId=" + savedFacultyId,
                         HttpMethod.PUT,
@@ -297,7 +297,7 @@ public class FacultyRestTemplateTest {
                 );
         Assertions.assertThat(addStudentResponse2.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<ArrayList<StudentDtoOut>> responseFacultyAfterAddingStudents = restTemplate
+        ResponseEntity<ArrayList<StudentDtoResponse>> responseFacultyAfterAddingStudents = restTemplate
                 .exchange(
                         "http://localhost:" + port + "/faculty/students/" + savedFacultyId,
                         HttpMethod.GET,
@@ -307,12 +307,12 @@ public class FacultyRestTemplateTest {
                 );
         Assertions.assertThat(responseFacultyAfterAddingStudents.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<StudentDtoOut> responseStudentAfterAddingFaculty1 = restTemplate
-                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId1, StudentDtoOut.class);
+        ResponseEntity<StudentDtoResponse> responseStudentAfterAddingFaculty1 = restTemplate
+                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId1, StudentDtoResponse.class);
         Assertions.assertThat(responseStudentAfterAddingFaculty1.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ResponseEntity<StudentDtoOut> responseStudentAfterAddingFaculty2 = restTemplate
-                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId2, StudentDtoOut.class);
+        ResponseEntity<StudentDtoResponse> responseStudentAfterAddingFaculty2 = restTemplate
+                .getForEntity("http://localhost:" + port + "/student/" + savedStudentId2, StudentDtoResponse.class);
         Assertions.assertThat(responseStudentAfterAddingFaculty2.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         Assertions.assertThat(responseFacultyAfterAddingStudents.getBody()).contains(responseStudentAfterAddingFaculty1.getBody());
@@ -328,8 +328,8 @@ public class FacultyRestTemplateTest {
         studentDtoIn.setName(name);
         studentDtoIn.setAge(age);
 
-        ResponseEntity<StudentDtoOut> studentResponseEntity = restTemplate
-                .postForEntity("http://localhost:" + port + "/student", studentDtoIn, StudentDtoOut.class);
+        ResponseEntity<StudentDtoResponse> studentResponseEntity = restTemplate
+                .postForEntity("http://localhost:" + port + "/student", studentDtoIn, StudentDtoResponse.class);
         return requireNonNull(studentResponseEntity.getBody()).getId();
     }
 
@@ -338,8 +338,8 @@ public class FacultyRestTemplateTest {
         facultyDtoIn.setColor(color);
         facultyDtoIn.setName(name);
 
-        ResponseEntity<FacultyDtoOut> facultyResponseEntity = restTemplate
-                .postForEntity("http://localhost:" + port + "/faculty", facultyDtoIn, FacultyDtoOut.class);
+        ResponseEntity<FacultyDtoResponse> facultyResponseEntity = restTemplate
+                .postForEntity("http://localhost:" + port + "/faculty", facultyDtoIn, FacultyDtoResponse.class);
         return requireNonNull(facultyResponseEntity.getBody()).getId();
     }
 }

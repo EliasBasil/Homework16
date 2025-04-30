@@ -1,7 +1,7 @@
 package ru.hogwarts.school.util;
 
 import org.springframework.stereotype.Component;
-import ru.hogwarts.school.dto.StudentDtoOut;
+import ru.hogwarts.school.dto.StudentDtoResponse;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.dto.StudentDtoIn;
 import ru.hogwarts.school.repositories.FacultyRepository;
@@ -14,16 +14,19 @@ public class StudentDTOMapper {
         this.facultyRepository = facultyRepository;
     }
 
-    public StudentDtoOut studentToDtoOut(Student student) {
+    public StudentDtoResponse studentToDtoOut(Student student) {
+        if (student == null) {
+            return null;
+        }
         long id = student.getFaculty() == null ? 0 : student.getFaculty().getId();
-        return new StudentDtoOut(student.getId(), student.getName(), student.getAge(), id);
+        return new StudentDtoResponse(student.getId(), student.getName(), student.getAge(), id);
     }
 
     public Student dtoInToStudent(StudentDtoIn studentDtoIn) {
         return new Student(studentDtoIn.getName(), studentDtoIn.getAge());
     }
 
-    public Student dtoOutToStudent(StudentDtoOut studentDtoOut) {
-        return new Student(studentDtoOut.getId(), studentDtoOut.getName(), studentDtoOut.getAge());
+    public Student dtoOutToStudent(StudentDtoResponse studentDtoResponse) {
+        return new Student(studentDtoResponse.getId(), studentDtoResponse.getName(), studentDtoResponse.getAge());
     }
 }
