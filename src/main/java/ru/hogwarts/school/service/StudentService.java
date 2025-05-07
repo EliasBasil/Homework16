@@ -10,6 +10,7 @@ import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.util.StudentDTOMapper;
 
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Service
 public class StudentService {
@@ -87,5 +88,23 @@ public class StudentService {
     public List<StudentDtoResponse> getLatestFiveOfStudents() {
         logger.info("Method invoked to get latest five students.");
         return studentRepository.getLatestFiveOfStudents().stream().map(studentDTOMapper::studentToDtoOut).toList();
+    }
+
+    public List<String> getStudentsStartingWithA() {
+        logger.info("Method invoked to get all students' names that start with an \"A\".");
+        return studentRepository.findAll().stream()
+                .map(Student::getName)
+                .filter(name -> name.startsWith("A"))
+                .sorted()
+                .map(String::toUpperCase)
+                .toList();
+    }
+
+    public Double getAverageAge() {
+        logger.info("Method invoked to get average age of students");
+        OptionalDouble average = studentRepository.findAll().stream()
+                .mapToDouble(Student::getAge)
+                .average();
+        return average.isPresent() ? average.getAsDouble() : 0;
     }
 }

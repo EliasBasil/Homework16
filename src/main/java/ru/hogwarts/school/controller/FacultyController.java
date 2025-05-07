@@ -109,4 +109,16 @@ public class FacultyController {
         facultyService.clearAll();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/longest_name")
+    public ResponseEntity<List<String>> getFacultiesWithLongestName() {
+        List<String> facultiesWithLongestNames = facultyService.getFacultiesWithLongestNames();
+        return ResponseEntity.ok(facultiesWithLongestNames);
+    }
+
+    @GetMapping("/get_number")
+    public ResponseEntity<Long> getNumber() {
+        Long number = facultyService.getNumber();
+        return ResponseEntity.ok(number);
+    }
 }

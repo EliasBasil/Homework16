@@ -116,4 +116,16 @@ public class StudentController {
         studentService.clearAll();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("name_A")
+    public ResponseEntity<List<String>> getStudentsNameStartingWithA() {
+        List<String> list = studentService.getStudentsStartingWithA();
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("get_average_age")
+    public ResponseEntity<Double> getAverageAge() {
+        Double averageAge = studentService.getAverageAge();
+        return ResponseEntity.ok(averageAge);
+    }
 }
