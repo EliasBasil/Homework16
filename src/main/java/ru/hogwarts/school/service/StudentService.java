@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.dto.StudentDtoIn;
 import ru.hogwarts.school.dto.StudentDtoResponse;
@@ -14,6 +16,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentDTOMapper studentDTOMapper;
+    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     public StudentService(StudentRepository studentRepository, StudentDTOMapper studentDTOMapper) {
         this.studentRepository = studentRepository;
@@ -21,55 +24,68 @@ public class StudentService {
     }
 
     public StudentDtoResponse addStudent(StudentDtoIn studentDtoIn) {
+        logger.info("Method invoked to create student.");
         return studentDTOMapper.studentToDtoOut(studentRepository.save(studentDTOMapper.dtoInToStudent(studentDtoIn)));
     }
 
     public void removeStudent(long id) {
+        logger.info("Method invoked to remove student.");
         studentRepository.deleteById(id);
     }
 
     public void clearAll() {
+        logger.info("Method invoked to delete all students.");
         studentRepository.deleteAll();
     }
 
     public Student getStudent(Long id) {
+        logger.info("Method invoked to get student.");
         return studentRepository.findById(id).orElse(null);
     }
 
     public StudentDtoResponse getStudentDtoOut(Long id) {
+        logger.info("Method invoked to get student DTO.");
         Student student = studentRepository.findById(id).orElse(null);
         return studentDTOMapper.studentToDtoOut(student);
     }
 
     public Student editStudent(Student student) {
+        logger.info("Method invoked to edit student.");
         return studentRepository.save(student);
     }
 
     public StudentDtoResponse editStudent(StudentDtoResponse studentDtoResponse) {
+        logger.info("Method invoked to edit student and return DTO.");
         return studentDTOMapper.studentToDtoOut(studentRepository.save(studentDTOMapper.dtoOutToStudent(studentDtoResponse)));
     }
 
     public List<StudentDtoResponse> getAllStudents() {
+        logger.info("Method invoked to get all students.");
         return studentRepository.findAll().stream().map(studentDTOMapper::studentToDtoOut).toList();
     }
 
     public List<StudentDtoResponse> filterStudentsByAge(int age) {
+        logger.info("Method invoked to get students by age.");
         return studentRepository.findByAge(age).stream().map(studentDTOMapper::studentToDtoOut).toList();
     }
 
     public List<StudentDtoResponse> getStudentsByAgeBetween(int minAge, int maxAge) {
+        logger.info("Method invoked to get students by age between two values.");
         return studentRepository.findAllByAgeBetween(minAge, maxAge).stream().map(studentDTOMapper::studentToDtoOut).toList();
     }
 
     public Integer getTotalNumberOfStudents() {
+        logger.info("Method invoked to get total number of students.");
         return studentRepository.getTotalNumberOfStudents();
     }
 
     public Double getAverageAgeOfStudents() {
+        logger.info("Method invoked to get average age  of students.");
         return studentRepository.getAverageAgeOfStudents();
     }
 
     public List<StudentDtoResponse> getLatestFiveOfStudents() {
+        logger.info("Method invoked to get latest five students.");
         return studentRepository.getLatestFiveOfStudents().stream().map(studentDTOMapper::studentToDtoOut).toList();
     }
 }

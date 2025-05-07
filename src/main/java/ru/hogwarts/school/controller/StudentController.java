@@ -1,5 +1,7 @@
 package ru.hogwarts.school.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
     private final FacultyDTOMapper facultyDTOMapper;
+    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     public StudentController(StudentService studentService, FacultyDTOMapper facultyDTOMapper) {
         this.studentService = studentService;
@@ -27,6 +30,7 @@ public class StudentController {
     public ResponseEntity<StudentDtoResponse> getStudentInfo(@PathVariable Long id) {
         StudentDtoResponse studentDtoResponse = studentService.getStudentDtoOut(id);
         if (studentDtoResponse == null) {
+            logger.warn("Trying to get student with nonexistent id = " + id);
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(studentDtoResponse);
@@ -42,6 +46,7 @@ public class StudentController {
     public ResponseEntity<FacultyDtoResponse> getStudentsFaculty(@PathVariable Long id) {
         Student student = studentService.getStudent(id);
         if (student == null) {
+            logger.warn("Trying to get students faculty with nonexistent student id = " + id);
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(facultyDTOMapper.facultyToDtoOut(student.getFaculty()));
@@ -88,6 +93,7 @@ public class StudentController {
     public ResponseEntity<StudentDtoResponse> editStudent(@RequestBody StudentDtoResponse studentDtoResponse) {
         Student foundStudent = studentService.getStudent(studentDtoResponse.getId());
         if (foundStudent == null) {
+            logger.warn("Trying to edit student with nonexistent id = " + studentDtoResponse.getId());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         StudentDtoResponse editedStudent = studentService.editStudent(studentDtoResponse);
@@ -98,6 +104,7 @@ public class StudentController {
     public ResponseEntity<StudentDtoResponse> deleteStudent(@PathVariable long id) {
         Student foundStudent = studentService.getStudent(id);
         if (foundStudent == null) {
+            logger.warn("Trying to delete student with nonexistent id = " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         studentService.removeStudent(id);

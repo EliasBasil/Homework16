@@ -2,6 +2,8 @@ package ru.hogwarts.school.controller;
 
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequestMapping("avatar")
 public class AvatarController {
     private final AvatarService avatarService;
+    private static final Logger logger = LoggerFactory.getLogger(AvatarController.class);
 
     public AvatarController(AvatarService avatarService) {
         this.avatarService = avatarService;
@@ -30,6 +33,7 @@ public class AvatarController {
     @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@PathVariable long id, @RequestParam MultipartFile avatar) throws IOException {
         if (avatar.getSize() > 1024 * 300) {
+            logger.warn("Trying to upload avatar file that is too big: file size = " + avatar.getSize());
             return ResponseEntity.badRequest().body("File is too big");
         }
         avatarService.uploadAvatar(id, avatar);
@@ -48,7 +52,7 @@ public class AvatarController {
     }
 
     @GetMapping("/{id}")
-    public void downloadAvatar(@PathVariable long id, HttpServletResponse response) throws IOException {
+    public void downloadAvatar(@PathVariable long id, HttpServletResponse response) {
         Avatar avatar = avatarService.findAvatar(id);
 
         Path path = Path.of(avatar.getFilePath());
@@ -59,6 +63,8 @@ public class AvatarController {
             response.setContentType(avatar.getMediaType());
             response.setContentLength((int) avatar.getFileSize());
             is.transferTo(os);
+        } catch (IOException ioException) {
+            logger.error("IOException when downloading avatar file");
         }
     }
 
