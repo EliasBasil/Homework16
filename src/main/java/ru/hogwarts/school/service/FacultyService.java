@@ -14,6 +14,9 @@ import ru.hogwarts.school.util.FacultyDTOMapper;
 import ru.hogwarts.school.util.StudentDTOMapper;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 @Service
 public class FacultyService {
@@ -100,4 +103,30 @@ public class FacultyService {
         logger.info("Method invoked to get student DTOs from faculty.");
         return faculty.getStudents().stream().map(studentDTOMapper::studentToDtoOut).toList();
     }
+
+    public List<String> getFacultiesWithLongestNames() {
+        logger.info("Method invoked to get faculties with the longest names");
+        Optional<Integer> maxLength = facultyRepository.findAll().stream()
+                .map(Faculty::getName)
+                .map(String::length)
+                .max(Integer::compare);
+
+        return facultyRepository.findAll().stream()
+                .map(Faculty::getName)
+                .filter(s -> s.length() == (maxLength.orElse(0)))
+                .collect(Collectors.toList());
+    }
+
+
+    public long getNumber() {
+        logger.info("Method invoked to get the sum of first million natural numbers");
+        long timeStart = System.currentTimeMillis();
+        long sum = LongStream.rangeClosed(1, 1_000_000)
+                .parallel()
+                .reduce(0, Long::sum);
+        long timeFinish = System.currentTimeMillis();
+        logger.info("Total time in milliseconds is: " + (timeFinish - timeStart));
+        return sum;
+    }
+
 }
