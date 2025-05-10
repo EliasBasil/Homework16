@@ -107,4 +107,60 @@ public class StudentService {
                 .average();
         return average.isPresent() ? average.getAsDouble() : 0;
     }
+
+    public void printParallel() {
+        List<StudentDtoResponse> students = getAllStudents();
+        if (students.size() < 6) {
+            throw new RuntimeException("Not enough students in the database");
+        }
+        Thread thread1 = new Thread() {
+            @Override
+            public void start() {
+                System.out.println(students.get(2));
+                System.out.println(students.get(3));
+            }
+        };
+        Thread thread2 = new Thread() {
+            @Override
+            public void start() {
+                System.out.println(students.get(4));
+                System.out.println(students.get(5));
+            }
+        };
+
+        System.out.println(students.get(0));
+        thread1.start();
+        System.out.println(students.get(1));
+        thread2.start();
+    }
+
+    public void printSynchronized() {
+        List<StudentDtoResponse> students = getAllStudents();
+        if (students.size() < 6) {
+            throw new RuntimeException("Not enough students in the database");
+        }
+        Thread thread1 = new Thread() {
+            @Override
+            public void start() {
+                consoleOutput(students.get(2));
+                consoleOutput(students.get(3));
+            }
+        };
+        Thread thread2 = new Thread() {
+            @Override
+            public void start() {
+                consoleOutput(students.get(4));
+                consoleOutput(students.get(5));
+            }
+        };
+
+        consoleOutput(students.get(0));
+        thread1.start();
+        consoleOutput(students.get(1));
+        thread2.start();
+    }
+
+    private synchronized void consoleOutput(StudentDtoResponse output) {
+        System.out.println(output);
+    }
 }

@@ -61,4 +61,14 @@ public class StudentDtoResponse {
     public int hashCode() {
         return Objects.hash(id, name, age, facultyId);
     }
+
+    @Override
+    public String toString() {
+        return "StudentDtoResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", facultyId=" + facultyId +
+                '}';
+    }
 }
