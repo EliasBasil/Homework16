@@ -128,4 +128,16 @@ public class StudentController {
         Double averageAge = studentService.getAverageAge();
         return ResponseEntity.ok(averageAge);
     }
+
+    @GetMapping("print-parallel")
+    public ResponseEntity<Void> printParallel() {
+        studentService.printParallel();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("print-synchronized")
+    public ResponseEntity<Void> printSynchronized() {
+        studentService.printSynchronized();
+        return ResponseEntity.ok().build();
+    }
 }
